@@ -1,0 +1,16 @@
+  <!-- clientList.html -->
+<template>
+    <lightning-card title="Informations sur les ventes">
+        <lightning-datatable
+            key-field="id"
+            data={clients}
+            columns={columns}
+            hide-checkbox-column>
+        </lightning-datatable>
+        <div class="slds-p-around_medium">
+            <p>Somme totale : {total} €</p>
+        </div>
+    </lightning-card>
+</template>
+        
+   

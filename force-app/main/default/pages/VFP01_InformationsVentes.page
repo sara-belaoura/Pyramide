@@ -1,0 +1,20 @@
+<apex:page standardController="Client__c" extensions="ClientExtController" recordSetVar="clients" lightningStylesheets="true" showHeader="false" title="Informations de Ventes">
+    <apex:pageBlock title="Informations sur les ventes">
+
+        <apex:pageBlockTable value="{!clients}" var="client">
+            <apex:column value="{!client.Numero_appartement_Achete__c}" />
+            <apex:column value="{!client.Batiment__r.Name}" />
+            <apex:column headerValue="Nom de l'acheteur">
+                <apex:outputLink value="/{!client.id}" target="_blank">   
+                {!client.Name}
+                </apex:outputLink>
+
+            </apex:column>
+            <apex:column value="{!client.Date_achat__c}" />
+            <apex:column value="{!client.Somme_payee__c}" />
+
+        </apex:pageBlockTable>
+        <apex:outputLabel>Somme totale : {!total} € </apex:outputLabel>
+
+    </apex:pageBlock>
+</apex:page>
