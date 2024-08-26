@@ -5,7 +5,7 @@ public with sharing class Test_Utils {
     public static List<Batiment__c> createBatiments(Integer numberOfBatiments, Boolean avecIngenieur) {
         List <Village__c> villages = new List<Village__c>();
         for (Integer i = 0; i < numberOfBatiments; i++) {
-            Village__c ville = new Village__c();
+            Village__c ville = new Village__c(Name='Village '+i);
             villages.add(ville);
         }
         insert villages;
@@ -19,7 +19,7 @@ public with sharing class Test_Utils {
         }
         // Create buildings without engineers attached
         for (Integer i = 0; i < numberOfBatiments; i++) {
-            Batiment__c batiment = new Batiment__c(Name = 'Batiment ' + i,Village_Associe__c = villages[i].Id);
+            Batiment__c batiment = new Batiment__c(Village_Associe__c = villages[i].Id);
             if(avecIngenieur==true){
                 batiment.Ingenieur_de_Realisation__c = ingenieur.Id;
             }
@@ -30,26 +30,18 @@ public with sharing class Test_Utils {
 
         return batiments;
     }
-
+    public static List<Account> createIngenieurs(Integer numberOfAccounts) {
+        List<Account> accounts = new List<Account>();
+        for (Integer i = 0; i < numberOfAccounts; i++) {
+            Account acc = new Account(LastName = 'Ingenieur ' + i, RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('PersonAccount').getRecordTypeId(), Disponible__c =true);
+            accounts.add(acc);
+        }
+        insert accounts;
+        return accounts;
+    }
 
     public static List<Contact> createTestContacts(Integer numberOfContacts) {
         Id profileId = [SELECT Id FROM Profile WHERE Name='Standard User' LIMIT 1].Id;
-        // Create a list of test users to serve as owners
-      /*User user = new User(
-                Username = 'testuser123211@example.com',
-                Email = 'testuserrrr@example.com',
-                LastName = 'TestUser' ,
-                Alias = 'tuser' ,
-                TimeZoneSidKey = 'America/New_York',
-                LocaleSidKey = 'en_US',
-                EmailEncodingKey = 'UTF-8',
-                ProfileId = profileId,
-                LanguageLocaleKey = 'en_US'
-            );
-
-        insert user;*/
-        
-     
 
         // Create a list of test contacts
         List<Contact> contacts = new List<Contact>();
@@ -61,6 +53,7 @@ public with sharing class Test_Utils {
             ));
         }
         insert contacts;
+        System.debug('inserted these contacts' + contacts);
 
         return contacts;
     }

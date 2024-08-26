@@ -4,7 +4,7 @@ public class AP01_Batiment_Test {
 
     @IsTest
     static void testAttacherIngenieur() {
-        
+        Test_Utils.createIngenieurs(3);
         // Call the method under test
         Test.startTest();
         List<Batiment__c> batiments = Test_Utils.createBatiments(3,false);

@@ -3,6 +3,4 @@ trigger BatimentTrigger on Batiment__c (before insert, before update) {
     {
         AP01_Batiment.attacherIngenieur(Trigger.new);
     }
-  
-
 }

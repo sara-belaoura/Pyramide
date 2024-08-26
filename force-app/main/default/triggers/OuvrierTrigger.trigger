@@ -9,6 +9,5 @@ trigger OuvrierTrigger on Contact (after insert, after update) {
         
         AP01_Ouvrier.envoyerEmail(Trigger.new, Trigger.oldMap);
     }
-    
 
 }

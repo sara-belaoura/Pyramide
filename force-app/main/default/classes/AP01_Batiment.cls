@@ -1,44 +1,43 @@
 public without sharing class AP01_Batiment {
     public static void attacherIngenieur(Batiment__c[] batiments) {
-        Batiment__c[] batimentsValides = new List<Batiment__c>();
+        List<Batiment__c> batimentsValides = new List<Batiment__c>();            
+        // Collecte des bâtiments sans ingénieur assigné
+        for(Batiment__c batiment : batiments) {
+            if (batiment.Ingenieur_de_Realisation__c == null) {
+                batimentsValides.add(batiment);
+            }           
+        }
+        
+        if (batimentsValides.size() > 0) {
+            // Récupérer tous les ingénieurs disponibles
+            List<Account> ingenieursDisponibles = [
+                SELECT Id, Disponible__c 
+                FROM Account 
+                WHERE Disponible__c = true 
+                LIMIT :batimentsValides.size()
+            ];
             
-           for(Batiment__c batiment : batiments)
-            {
-                // Vérifier si le bâtiment est déjà rattaché à un ingénieur
-                if (batiment.Ingenieur_de_Realisation__c == null) {
-                    batimentsValides.add(batiment);
-                }           
+            if (ingenieursDisponibles.size() == 0) {
+                // Aucun ingénieur disponible
+                System.debug('Aucun ingénieur disponible.');
+                return;
             }
-            Map<Id,Account> mapBatimentToIngenieur = new Map<Id,Account>();
-           
-            if(batimentsValides.size()>0){
-                 //Récupérer le RecordTypeId du compte personnel
-                Id personAccountRecordTypeId =  Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('PersonAccount').getRecordTypeId();
-                Integer i=0;
-                for(Batiment__c batiment : batimentsValides){
-                    // Créer un nouvel ingénieur
-                    Account nouvelIngenieur = new Account(LastName='Ingenieur'+i,RecordTypeId=personAccountRecordTypeId);
-                    mapBatimentToIngenieur.put(batiment.id,nouvelIngenieur);
-                    i++;
-                }
-                insert mapBatimentToIngenieur.values();
-                System.debug('Ingenieurs insérés : '+mapBatimentToIngenieur.values());
-    
-                 // Attacher les ingénieurs au bâtiments
-                for(Batiment__c batiment : batimentsValides){
-                    System.debug(batiment.Ingenieur_de_Realisation__c);
-                    batiment.Ingenieur_de_Realisation__c = mapBatimentToIngenieur.get(batiment.id).Id;
-                }
-               
+            
+            // Mapper les ingénieurs disponibles aux bâtiments
+            for (Integer i = 0; i < batimentsValides.size() && i < ingenieursDisponibles.size(); i++) {
                 
+                // Attacher l'ingénieur au bâtiment
+                batimentsValides[i].Ingenieur_de_Realisation__c = ingenieursDisponibles[i].Id;
                 
-                
-                
-    
-                
-                
+                // Marquer l'ingénieur comme non disponible
+                ingenieursDisponibles[i].Disponible__c = false;
             }
-
+            
+            
+            // Mettre à jour les ingénieurs pour les marquer comme non disponibles
+            update ingenieursDisponibles;
+            
+            System.debug('Les ingénieurs ont été assignés et mis à jour.');
+        }
     }
-
 }
